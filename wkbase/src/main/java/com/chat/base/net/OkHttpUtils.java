@@ -1,9 +1,13 @@
 package com.chat.base.net;
 
+import static java.util.Collections.emptySet;
+
 import android.util.Log;
 
 import com.chat.base.WKBaseApplication;
 import com.chat.base.utils.WKNetUtil;
+import com.chuckerteam.chucker.api.ChuckerCollector;
+import com.chuckerteam.chucker.api.ChuckerInterceptor;
 
 import java.io.File;
 import java.security.cert.X509Certificate;
@@ -17,6 +21,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * 2020-07-17 14:55
@@ -40,8 +45,17 @@ public class OkHttpUtils {
     public OkHttpClient getOkHttpClient() {
         if (sOkHttpClient == null) {
             synchronized (OkHttpUtils.class) {
+                HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+                logging.setLevel(HttpLoggingInterceptor.Level.BODY);
                 Cache cache = new Cache(new File(WKBaseApplication.getInstance().getContext().getCacheDir(), "HttpCache"),
                         1024 * 1024 * 100);
+                ChuckerInterceptor chuckerInterceptor =
+                        new ChuckerInterceptor.Builder(WKBaseApplication.getInstance().application)
+                                .collector(new ChuckerCollector(WKBaseApplication.getInstance().application))
+                                .maxContentLength(250000L)
+                                .redactHeaders(emptySet())
+                                .alwaysReadResponseBody(false)
+                                .build();
                 if (sOkHttpClient == null) {
                     sOkHttpClient = new OkHttpClient.Builder().cache(cache)
                             .connectTimeout(60, TimeUnit.SECONDS)
@@ -66,8 +80,11 @@ public class OkHttpUtils {
                             .hostnameVerifier(SSLSocketClient.getHostnameVerifier())
                             .addInterceptor(mRewriteCacheControlInterceptor)
                             .addInterceptor(new CommonRequestParamInterceptor())
+                            .addInterceptor(chuckerInterceptor)
+                            .addInterceptor(logging)
                             .addNetworkInterceptor(mRewriteCacheControlInterceptor)
-                            .addInterceptor(new LogInterceptor()).build();
+                            .build();
+
                 }
             }
         }

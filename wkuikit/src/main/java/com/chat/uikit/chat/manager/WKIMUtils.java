@@ -181,7 +181,9 @@ public class WKIMUtils {
         //监听聊天附件上传
         WKIM.getInstance().getMsgManager().addOnUploadAttachListener((msg, listener) -> WKSendMsgUtils.getInstance().uploadChatAttachment(msg, listener));
         //监听同步会话
-        WKIM.getInstance().getConversationManager().addOnSyncConversationListener((s, i, l, iSyncConvChatBack) -> MsgModel.getInstance().syncChat(s, i, l, iSyncConvChatBack));
+        WKIM.getInstance().getConversationManager().addOnSyncConversationListener((s, i, l, iSyncConvChatBack) -> {
+            MsgModel.getInstance().syncChat(s, i, l, iSyncConvChatBack);
+        });
         //监听同步频道会话
         WKIM.getInstance().getMsgManager().addOnSyncChannelMsgListener((channelID, channelType, startMessageSeq, endMessageSeq, limit, pullMode, iSyncChannelMsgBack) -> MsgModel.getInstance().syncChannelMsg(channelID, channelType, startMessageSeq, endMessageSeq, limit, pullMode, iSyncChannelMsgBack));
         //新消息监听
@@ -572,7 +574,7 @@ public class WKIMUtils {
                     }
                 }
                 orderSeq = WKIM.getInstance().getMsgManager().getMessageOrderSeq(messageSeq, chatViewMenu.channelID, chatViewMenu.channelType);
-                intent.putExtra("unreadStartMsgOrderSeq", orderSeq);
+//                intent.putExtra("unreadStartMsgOrderSeq", orderSeq);
                 intent.putExtra("redDot", redDot);
             } else {
                 WKUIConversationMsg uiMsg = WKIM.getInstance().getConversationManager().getUIConversationMsg(chatViewMenu.channelID, chatViewMenu.channelType);

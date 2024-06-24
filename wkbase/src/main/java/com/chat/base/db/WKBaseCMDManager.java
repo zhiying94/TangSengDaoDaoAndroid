@@ -273,8 +273,9 @@ public class WKBaseCMDManager {
                     } catch (JSONException e) {
                         WKLogUtils.e("解析cmd错误");
                     }
-                } else
+                } else {
                     WKIM.getInstance().getCMDManager().handleCMD(WKBaseCmd.cmd, WKBaseCmd.param, WKBaseCmd.sign);
+                }
             }
         }
         if (WKReader.isNotEmpty(rtcList)) {

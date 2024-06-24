@@ -77,18 +77,23 @@ public class MsgDbManager {
         }
 
         //先通过message_seq排序
-        if (!tempList.isEmpty())
+        if (!tempList.isEmpty()) {
             Collections.sort(tempList, (o1, o2) -> (o1.messageSeq - o2.messageSeq));
+        }
         //获取最大和最小messageSeq
         long minMessageSeq = 0;
         long maxMessageSeq = 0;
         for (int i = 0, size = tempList.size(); i < size; i++) {
             if (tempList.get(i).messageSeq != 0) {
-                if (minMessageSeq == 0) minMessageSeq = tempList.get(i).messageSeq;
-                if (tempList.get(i).messageSeq > maxMessageSeq)
-                    maxMessageSeq = tempList.get(i).messageSeq;
-                if (tempList.get(i).messageSeq < minMessageSeq)
+                if (minMessageSeq == 0) {
                     minMessageSeq = tempList.get(i).messageSeq;
+                }
+                if (tempList.get(i).messageSeq > maxMessageSeq) {
+                    maxMessageSeq = tempList.get(i).messageSeq;
+                }
+                if (tempList.get(i).messageSeq < minMessageSeq) {
+                    minMessageSeq = tempList.get(i).messageSeq;
+                }
             }
         }
         //是否同步消息
@@ -98,9 +103,11 @@ public class MsgDbManager {
         //判断页与页之间是否连续
         long oldestMsgSeq;
         //如果获取到的messageSeq为0说明oldestOrderSeq这条消息是本地消息则获取他上一条或下一条消息的messageSeq做为判断
-        if (oldestOrderSeq % 1000 != 0)
+        if (oldestOrderSeq % 1000 != 0) {
             oldestMsgSeq = queryMsgSeq(channelId, channelType, oldestOrderSeq, pullMode);
-        else oldestMsgSeq = oldestOrderSeq / 1000;
+        } else {
+            oldestMsgSeq = oldestOrderSeq / 1000;
+        }
         if (pullMode == 0) {
             //下拉获取消息 大->小
             if (maxMessageSeq != 0 && oldestMsgSeq != 0 && oldestMsgSeq - maxMessageSeq > 1) {

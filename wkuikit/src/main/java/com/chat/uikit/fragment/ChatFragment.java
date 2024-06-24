@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -104,6 +105,8 @@ public class ChatFragment extends WKBaseFragment<FragChatConversationLayoutBindi
             textView.setTextColor(ContextCompat.getColor(requireActivity(), R.color.colorDark));
             return textView;
         });
+        Log.d("TEST", "uid=" + WKConfig.getInstance().getUid());
+        Log.d("TEST", "token=" + WKConfig.getInstance().getToken());
         wkVBinding.textSwitcher.setText(getString(R.string.app_name));
         //去除刷新条目闪动动画
         ((DefaultItemAnimator) Objects.requireNonNull(wkVBinding.recyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
@@ -205,6 +208,7 @@ public class ChatFragment extends WKBaseFragment<FragChatConversationLayoutBindi
         });
         //频道刷新监听
         WKIM.getInstance().getChannelManager().addOnRefreshChannelInfo("chat_fragment_refresh_channel", (channel, isEnd) -> {
+            Log.d("TAG", "addOnRefreshChannelInfo: channel=" + channel);
             if (channel != null) {
                 for (int i = 0, size = chatConversationAdapter.getData().size(); i < size; i++) {
                     if (!TextUtils.isEmpty(chatConversationAdapter.getData().get(i).uiConversationMsg.channelID) && !TextUtils.isEmpty(channel.channelID) && chatConversationAdapter.getData().get(i).uiConversationMsg.channelID.equals(channel.channelID) && chatConversationAdapter.getData().get(i).uiConversationMsg.channelType == channel.channelType) {
@@ -349,7 +353,10 @@ public class ChatFragment extends WKBaseFragment<FragChatConversationLayoutBindi
             }
         });
         // 监听刷新最近列表
-        WKIM.getInstance().getConversationManager().addOnRefreshMsgListener("chat_fragment", this::resetData);
+        WKIM.getInstance().getConversationManager().addOnRefreshMsgListener("chat_fragment", (uiConversationMsg, isEnd) -> {
+            Log.d("TAG", "addOnRefreshMsgListener: uiConversationMsg=" + uiConversationMsg + ",isEnd=" + isEnd);
+            resetData(uiConversationMsg, isEnd);
+        });
         // 监听连接状态
         WKIM.getInstance().getConnectionManager().addOnConnectionStatusListener("chat_fragment", (i, reason) -> {
             if (wkVBinding.textSwitcher.getTag() != null) {

@@ -70,6 +70,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 5/20/21 5:38 PM
  * 消息管理
+ * @noinspection ALL
  */
 public class MsgManager extends BaseManager {
     private final String TAG = "MsgManager";
